@@ -1,19 +1,60 @@
-name: GitHub Classroom Workflow
-
-on:
-  - push
-  - workflow_dispatch
-
+name: Autograding Tests
+'on':
+- push
+- repository_dispatch
 permissions:
   checks: write
   actions: read
   contents: read
-
 jobs:
-  build:
-    name: Autograding
+  run-autograding-tests:
     runs-on: ubuntu-latest
     if: github.actor != 'github-classroom[bot]'
     steps:
-      - uses: actions/checkout@v4
-      - uses: education/autograding@v1
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: lienar1
+      id: lienar1
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: lienar1
+        setup-command: ''
+        command: gradle test --tests "*linear1*"
+        timeout: 10
+        max-score: 1
+    - name: recursivelinear
+      id: recursivelinear
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: recursivelinear
+        setup-command: ''
+        command: gradle test --tests "*recursivelinear*"
+        timeout: 10
+        max-score: 1
+    - name: binarysearch
+      id: binarysearch
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: binarysearch
+        setup-command: ''
+        command: gradle test --tests "*binarysearch*
+        timeout: 10
+        max-score: 1
+    - name: recursivebinary
+      id: recursivebinary
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: recursivebinary
+        setup-command: ''
+        command: gradle test --tests "*recursivebinary*
+        timeout: 10
+        max-score: 1
+    - name: Autograding Reporter
+      uses: classroom-resources/autograding-grading-reporter@v1
+      env:
+        LIENAR1_RESULTS: "${{steps.lienar1.outputs.result}}"
+        RECURSIVELINEAR_RESULTS: "${{steps.recursivelinear.outputs.result}}"
+        BINARYSEARCH_RESULTS: "${{steps.binarysearch.outputs.result}}"
+        RECURSIVEBINARY_RESULTS: "${{steps.recursivebinary.outputs.result}}"
+      with:
+        runners: lienar1,recursivelinear,binarysearch,recursivebinary
